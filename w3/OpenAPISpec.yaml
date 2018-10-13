@@ -1,0 +1,167 @@
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: Products Catalog API
+  description: Your first microservice using an API First approach
+host: localhost:8080
+schemes:
+- http
+basePath: /api/v1
+paths:
+  /products:
+    get:
+      description: |
+        Gets list of Products
+      tags:
+        - Products
+      parameters:
+        - $ref: '#/parameters/limitParam'
+        - $ref: '#/parameters/offsetParam'
+      responses:
+        '200':
+          description: List of Products
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/product'
+        '500':
+          description: Server error
+          schema:
+            $ref: '#/definitions/error'
+    post:
+      description: |
+        Create Product
+      tags:
+        - Products
+      parameters:
+      - in: body
+        name: payload
+        description: Product payload
+        schema:
+          $ref: '#/definitions/product'
+        required: true
+      responses:
+        '201':
+          description: Product created Successfully
+          schema:
+            $ref: '#/definitions/product'
+        '500':
+          description: Server error
+          schema:
+            $ref: '#/definitions/error'
+  '/products/{id}':
+    delete:
+      description: Delete the selected product
+      tags:
+      - Products
+      parameters:
+      - name: id
+        type: string
+        in: path
+        required: true
+      responses:
+        '204':
+          description: Product deleted Successfully
+        '404':
+          description: Item not found
+          schema:
+            $ref: '#/definitions/error'
+        '500':
+          description: Server error
+          schema:
+            $ref: '#/definitions/error'
+    get:
+      description: Get the product by id
+      tags:
+      - Products
+      parameters:
+      - name: id
+        type: string
+        in: path
+        required: true
+      responses:
+        '200':
+          description: Product for given product id
+          schema:
+            $ref: '#/definitions/product'
+        '404':
+          description: Item not found
+          schema:
+            $ref: '#/definitions/error'
+        '500':
+          description: Server error
+          schema:
+            $ref: '#/definitions/error'
+parameters:
+  limitParam:
+    name: $top
+    in: query
+    description: Limits the number of returned results
+    required: false
+    type: number
+    format: int32
+  offsetParam:
+    name: $skip
+    in: query
+    description: Offset to the no of parameters to skip
+    required: false
+    type: number
+    format: int32
+definitions:
+  error:
+    type: object
+    properties:
+      code:
+        type: string
+        description: Error code
+      message:
+        type: string
+        description: Error message
+      description:
+        type: string
+        description: Detailed Error Description
+  price:
+    type: object
+    properties:
+      value:
+        type: number
+        format: double
+        example: 33.99
+        title: Product price
+      currency:
+        type: string
+        title: Currency unit
+        example: EUR
+        enum:
+        - USD
+        - EUR
+  availability:
+    type: object
+    properties:
+      availableAmount:
+        type: integer
+        example: 530
+        title: Available product quantity
+      warehouseId:
+        type: string
+        example: 890
+        title: Warehouse Identifer
+  product:
+    type: object
+    properties:
+      id:
+        type: string
+        description: Product Id
+        example: 123
+      name:
+        type: string
+        description: Product name
+        example: KittyFood
+      description:
+        type: string
+        description: Product description
+        example: Tasty Kitty food
+      price:
+        $ref: '#/definitions/price'
+      availability:
+        $ref: '#/definitions/availability'
